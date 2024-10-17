@@ -1,0 +1,32 @@
+services:
+  # server
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env.development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src:/usr/src/app/src
+    depends_on:
+      database:
+        condition: service_healthy
+
+  # database
+  database: # ⭐️ Database Host Name ⭐️
+    image: mysql
+    ports:
+      - '3306:3306' # ⭐️ Database Port Number ⭐️
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password_123
+      - MYSQL_DATABASE=database_name # ⭐️ Database name ⭐️
+      - MYSQL_USER=database_user # ⭐️ Database user name ⭐️
+      - MYSQL_PASSWORD=database_password # ⭐️ Database user password ⭐️
+      - MYSQL_TCP_PORT=3306
